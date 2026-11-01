@@ -64,6 +64,7 @@ object VoiceEngine {
                 val tmp = File(c.filesDir, "vosk_model.zip")
                 tmp.delete()
                 val urls = arrayOf(
+                    "https://hoosh-api.pages.dev/api/model/vosk",
                     "https://github.com/khastomahdi-tech/Hoosh-Pro/releases/download/v1.1/vosk-model-small-fa-0.42.zip",
                     "https://alphacephei.com/vosk/models/vosk-model-small-fa-0.42.zip"
                 )

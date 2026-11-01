@@ -105,7 +105,7 @@ object VisionAnalyzer {
             if (!fas.exists()) {
                 dataDir.mkdirs()
                 val urls = arrayOf(
-                    "https://github.com/khastomahdi-tech/Hoosh-Pro/releases/download/v1.1/fas.traineddata",
+                    "https://hoosh-api.pages.dev/api/model/tess-fa",
                     "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/fas.traineddata"
                 )
                 var ok = false
