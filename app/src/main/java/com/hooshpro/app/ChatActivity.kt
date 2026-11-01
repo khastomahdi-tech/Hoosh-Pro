@@ -61,7 +61,7 @@ class ChatActivity : Activity() {
         list.adapter = adapter
         list.divider = null
         list.transcriptMode = ListView.TRANSCRIPT_MODE_NORMAL
-        list.stackFromBottom = true
+        list.setStackFromBottom(true)
 
         input = findViewById(R.id.input)
         btnSend = findViewById(R.id.btnSend)
@@ -289,7 +289,11 @@ class ChatActivity : Activity() {
                 .setMessage("همه‌ی گفتگوها و عکس‌های داخل برنامه حذف می‌شوند.")
                 .setPositiveButton("پاک کن") { _, _ ->
                     db.deleteAllChats()
-                    File(getExternalFilesDir("images") ?: filesDir).listFiles()?.forEach { it.delete() }
+                    val imgDir = getExternalFilesDir("images")
+                    if (imgDir != null) {
+                        val old = imgDir.listFiles()
+                        if (old != null) for (f in old) f.delete()
+                    }
                     adapter.clearCache()
                     msgs.clear()
                     chatId = db.newChat()
