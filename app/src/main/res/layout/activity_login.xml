@@ -60,8 +60,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="دستیار هوشمند تو — پاسخ هر سؤال، ساخت هر عکس"
-                android:textColor="#94A3B8"
+                android:text="پاسخ هر سؤال · ورودی صوتی · تحلیل و ساخت عکس"
+                android:textColor="#B4B4B4"
                 android:textSize="14sp" />
 
             <LinearLayout
@@ -78,8 +78,8 @@
                     android:paddingEnd="12dp"
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp"
-                    android:text="💬 گفتگوی هوشمند"
-                    android:textColor="#A5B4FC"
+                    android:text="💬 گفتگو"
+                    android:textColor="#ECECEC"
                     android:textSize="11sp" />
 
                 <TextView
@@ -91,8 +91,8 @@
                     android:paddingEnd="12dp"
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp"
-                    android:text="🎨 تولید عکس"
-                    android:textColor="#67E8F9"
+                    android:text="🎨 عکس"
+                    android:textColor="#ECECEC"
                     android:textSize="11sp" />
 
                 <TextView
@@ -104,8 +104,8 @@
                     android:paddingEnd="12dp"
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp"
-                    android:text="🗂 حافظه‌ی گفتگو"
-                    android:textColor="#C4B5FD"
+                    android:text="🎤 صدا"
+                    android:textColor="#ECECEC"
                     android:textSize="11sp" />
             </LinearLayout>
 
@@ -120,8 +120,8 @@
                 android:maxLines="1"
                 android:paddingStart="18dp"
                 android:paddingEnd="18dp"
-                android:textColor="#F1F5F9"
-                android:textColorHint="#64748B"
+                android:textColor="#ECECEC"
+                android:textColorHint="#6E6E6E"
                 android:textSize="14sp" />
 
             <Button
@@ -149,7 +149,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="26dp"
                 android:text="ورودت در دیتابیس سرور هوش پرو ثبت می‌شود و نشستت امن می‌ماند 🔒"
-                android:textColor="#64748B"
+                android:textColor="#8E8E8E"
                 android:textSize="11sp" />
         </LinearLayout>
     </ScrollView>

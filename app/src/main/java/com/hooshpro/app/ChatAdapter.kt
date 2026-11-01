@@ -11,7 +11,13 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 
-/** آداپتور لیست پیام‌ها — حباب کاربر / پاسخ هوش / عکس / در حال نوشتن */
+/**
+ * آداپتور لیست پیام‌ها — سبک ChatGPT:
+ *  پیام کاربر: حباب ساده (بالا: عکس پیوست‌شده در صورت وجود)
+ *  پاسخ هوش: بدون حباب، با آواتار لوگو — حین استریم نشانگر ▍
+ *  عکس تولیدشده: کارت عکس + ذخیره
+ *  در حال نوشتن: سه نقطه‌ی متحرک
+ */
 class ChatAdapter(
     private val ctx: Context,
     private val msgs: MutableList<ChatAdapter.Msg>,
@@ -24,10 +30,11 @@ class ChatAdapter(
         var id: Long,
         var role: String,          // user | ai | typing
         var text: String,
-        var img: String? = null,   // مسیر فایل عکس تولیدشده
+        var img: String? = null,   // کاربر: عکس پیوست / هوش: عکس تولیدشده
         var pending: Boolean = false,
         var error: Boolean = false,
-        var prompt: String = ""
+        var prompt: String = "",
+        var streaming: Boolean = false
     )
 
     companion object {
@@ -64,11 +71,28 @@ class ChatAdapter(
 
         when (type) {
             TYPE_USER -> {
-                v.findViewById<TextView>(R.id.bubble).text = m.text
+                val tv = v.findViewById<TextView>(R.id.bubble)
+                val thumb = v.findViewById<ImageView>(R.id.thumb)
+                if (!m.img.isNullOrEmpty()) {
+                    val b = decode(m.img)
+                    if (b != null) {
+                        thumb.setImageBitmap(b)
+                        thumb.clipToOutline = true
+                        thumb.visibility = View.VISIBLE
+                        tv.text = if (m.text.isBlank()) "📷" else m.text
+                    } else {
+                        thumb.visibility = View.GONE
+                        tv.text = m.text
+                    }
+                } else {
+                    thumb.visibility = View.GONE
+                    tv.text = m.text
+                }
             }
             TYPE_AI -> {
                 val tv = v.findViewById<TextView>(R.id.bubble)
-                tv.text = if (m.error) "⚠️ " + m.text else Marked.mark(m.text)
+                tv.text = if (m.error) "⚠️ " + m.text
+                else Marked.mark(if (m.streaming) m.text + " ▍" else m.text)
                 v.setOnLongClickListener {
                     onAiLongPress(m); true
                 }
@@ -94,6 +118,7 @@ class ChatAdapter(
                     caption.text = m.prompt
                     img.visibility = View.VISIBLE
                     img.setImageBitmap(decode(m.img))
+                    img.clipToOutline = true
                     img.setOnClickListener { onOpenImage(m) }
                     save.setOnClickListener { onSaveImage(m) }
                 }
@@ -109,11 +134,13 @@ class ChatAdapter(
             val o = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             BitmapFactory.decodeFile(path, o)
             var sample = 1
-            while (o.outWidth / (sample * 2) >= 760) sample *= 2
+            while (o.outWidth / (sample * 2) >= 720) sample *= 2
             val b = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample })
             if (b != null) cache[path] = b
             b
-        } catch (_: Exception) { null }
+        } catch (_: Exception) {
+            null
+        }
     }
 
     fun clearCache() {

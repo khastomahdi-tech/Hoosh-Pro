@@ -31,7 +31,7 @@ object Marked {
                 val s = out.length
                 appendStyled(out, fence.toString().trimEnd(), codeSpan = true)
                 out.append("\n")
-                out.setSpan(BackgroundColorSpan(0xFF172033.toInt()), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                out.setSpan(BackgroundColorSpan(0xFF1B1B1B.toInt()), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 fence.setLength(0)
             }
         }
@@ -60,7 +60,7 @@ object Marked {
                     out.append("\n")
                     out.setSpan(StyleSpan(Typeface.BOLD), s, out.length - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     out.setSpan(RelativeSizeSpan(if ((hm.group(1)?.length ?: 1) <= 2) 1.22f else 1.12f), s, out.length - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    out.setSpan(ForegroundColorSpan(0xFFC4B5FD.toInt()), s, out.length - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    out.setSpan(ForegroundColorSpan(0xFFFFFFFF.toInt()), s, out.length - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
                 line.trimStart().startsWith("- ") || line.trimStart().startsWith("* ") -> {
                     val body = line.trimStart().substring(2)
@@ -94,7 +94,7 @@ object Marked {
             val s = out.length
             out.append(text)
             out.setSpan(TypefaceSpan("monospace"), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            out.setSpan(ForegroundColorSpan(0xFF67E8F9.toInt()), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            out.setSpan(ForegroundColorSpan(0xFF8DD3FF.toInt()), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             return
         }
         // برش به قطعات: بولد / کد inline
@@ -118,8 +118,8 @@ object Marked {
                 out.setSpan(ForegroundColorSpan(0xFFFFFFFF.toInt()), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             } else {
                 out.setSpan(TypefaceSpan("monospace"), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                out.setSpan(ForegroundColorSpan(0xFF67E8F9.toInt()), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                out.setSpan(BackgroundColorSpan(0xFF172033.toInt()), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                out.setSpan(ForegroundColorSpan(0xFF8DD3FF.toInt()), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                out.setSpan(BackgroundColorSpan(0xFF1B1B1B.toInt()), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
             cur = rng.lastInclusive + 1
         }

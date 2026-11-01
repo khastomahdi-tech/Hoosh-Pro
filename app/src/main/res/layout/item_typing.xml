@@ -2,42 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="12dp"
     android:paddingEnd="12dp"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp">
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
     <FrameLayout
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:background="@drawable/bg_avatar_ai">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
             android:layout_gravity="center"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_spark" />
     </FrameLayout>
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/bg_bubble_ai"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="13dp"
-        android:paddingBottom="13dp">
-
-        <com.hooshpro.app.TypingView
-            android:layout_width="64dp"
-            android:layout_height="22dp" />
-    </FrameLayout>
-
-    <View
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_weight="1" />
+    <com.hooshpro.app.TypingView
+        android:layout_width="58dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="12dp" />
 </LinearLayout>

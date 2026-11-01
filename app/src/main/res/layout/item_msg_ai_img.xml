@@ -5,95 +5,74 @@
     android:orientation="horizontal"
     android:paddingStart="12dp"
     android:paddingEnd="12dp"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp">
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
 
     <FrameLayout
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:background="@drawable/bg_avatar_ai">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
             android:layout_gravity="center"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_spark" />
     </FrameLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/bg_bubble_ai"
-        android:orientation="vertical"
-        android:padding="9dp">
+        android:layout_marginStart="9dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <ProgressBar
             android:id="@+id/progress"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:layout_gravity="center"
-            android:indeterminateTint="#8B5CF6"
-            android:layout_marginTop="14dp"
-            android:layout_marginBottom="6dp" />
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginTop="4dp"
+            android:indeterminateTint="@color/purple" />
 
         <TextView
             android:id="@+id/progressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:maxWidth="230dp"
-            android:padding="6dp"
-            android:text="در حال تولید عکس…"
-            android:textColor="#94A3B8"
-            android:textSize="12sp" />
+            android:layout_marginTop="4dp"
+            android:textColor="@color/textDim"
+            android:textSize="13sp" />
 
         <ImageView
             android:id="@+id/photo"
-            android:layout_width="270dp"
-            android:layout_height="wrap_content"
+            android:layout_width="264dp"
+            android:layout_height="264dp"
             android:adjustViewBounds="true"
             android:background="@drawable/bg_img_card"
-            android:maxHeight="380dp"
             android:contentDescription="عکس تولیدشده"
-            android:scaleType="fitCenter"
-            android:padding="4dp"
-            android:visibility="gone" />
+            android:scaleType="fitCenter" />
 
         <TextView
             android:id="@+id/caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="250dp"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
-            android:paddingTop="7dp"
-            android:paddingBottom="2dp"
-            android:textColor="#94A3B8"
-            android:textSize="12sp"
-            android:visibility="gone" />
+            android:layout_marginTop="6dp"
+            android:maxWidth="296dp"
+            android:textColor="@color/textDim"
+            android:textSize="12.5sp" />
 
         <TextView
             android:id="@+id/save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
             android:layout_marginTop="7dp"
             android:background="@drawable/bg_chip"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:text="⬇️ ذخیره‌ی عکس در گالری"
-            android:textColor="#67E8F9"
-            android:textSize="12sp"
-            android:visibility="gone" />
+            android:paddingStart="13dp"
+            android:paddingEnd="13dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="⬇️ ذخیره‌ی عکس"
+            android:textColor="@color/text"
+            android:textSize="12.5sp" />
     </LinearLayout>
-
-    <View
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_weight="1" />
 </LinearLayout>

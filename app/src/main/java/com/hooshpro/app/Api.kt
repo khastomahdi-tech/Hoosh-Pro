@@ -2,6 +2,8 @@ package com.hooshpro.app
 
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
@@ -41,12 +43,16 @@ object Api {
 
     // ───────────────────────────── chat ──────────────────────────────
 
-    /** گفتگو: اول سرور، اگر خطا بود تماس مستقیم با مدل */
-    fun chat(email: String?, token: String?, msgs: List<ChatMsg>): String {
+    /**
+     * گفتگو: اول استریم از سرور، بعد سرور معمولی، در پایان تماس مستقیم با مدل.
+     * onDelta هنگام رسیدن هر تکه از پاسخ صدا زده می‌شود (پاسخ زنده مثل ChatGPT).
+     */
+    fun chat(email: String?, token: String?, msgs: List<ChatMsg>, onDelta: ((String) -> Unit)? = null): String {
         val err = ArrayList<String>()
         if (!email.isNullOrEmpty() && !token.isNullOrEmpty()) {
             try {
-                return chatServer(email, token, msgs)
+                return if (onDelta != null) chatStream(email, token, msgs, onDelta)
+                else chatServer(email, token, msgs)
             } catch (e: Exception) {
                 err.add(e.message ?: "?")
             }
@@ -66,13 +72,72 @@ object Api {
             .put("email", email)
             .put("token", token)
             .put("messages", arr)
-        val text = httpPost("$BASE/api/chat", body.toString(), 180000)
+        val text = httpPost("$BASE/api/chat", body.toString(), 240000)
         val j = JSONObject(text)
         if (j.optBoolean("ok", false)) return j.optString("reply", "")
         throw HooshException(
             j.optString("error", "پاسخی دریافت نشد — دوباره امتحان کن"),
             j.optString("code", "")
         )
+    }
+
+    /** پاسخ زنده (SSE) — فقط delta.content خوانده می‌شود */
+    private fun chatStream(email: String, token: String, msgs: List<ChatMsg>, onDelta: (String) -> Unit): String {
+        val arr = JSONArray()
+        for (m in msgs) arr.put(JSONObject().put("role", m.role).put("content", m.content))
+        val body = JSONObject()
+            .put("email", email)
+            .put("token", token)
+            .put("messages", arr)
+        val c = open("$BASE/api/chat/stream", 240000, "POST")
+        c.doOutput = true
+        c.setRequestProperty("Content-Type", "application/json; charset=utf-8")
+        try {
+            val w = OutputStreamWriter(c.outputStream, Charsets.UTF_8)
+            w.write(body.toString())
+            w.flush()
+            w.close()
+        } catch (e: Exception) {
+            try { c.disconnect() } catch (_: Exception) {}
+            throw HooshException("اتصال برقرار نشد — اینترنت را بررسی کن")
+        }
+        val code = c.responseCode
+        if (code !in 200..299) {
+            val text = try { c.errorStream?.bufferedReader()?.use { it.readText() } ?: "" } catch (_: Exception) { "" }
+            try { c.disconnect() } catch (_: Exception) {}
+            val msg = try { JSONObject(text).optString("error", "") } catch (_: Exception) { "" }
+            throw HooshException(if (msg.isNotBlank()) msg else "خطای سرور ($code)")
+        }
+        val sb = StringBuilder()
+        var lastUi = 0L
+        try {
+            val reader = BufferedReader(InputStreamReader(c.inputStream, Charsets.UTF_8))
+            while (true) {
+                val line = reader.readLine() ?: break
+                if (!line.startsWith("data:")) continue
+                val payload = line.substring(5).trim()
+                if (payload == "[DONE]") break
+                val delta = try {
+                    JSONObject(payload)
+                        .optJSONArray("choices")?.optJSONObject(0)
+                        ?.optJSONObject("delta")?.optString("content", "") ?: ""
+                } catch (_: Exception) { "" }
+                if (delta.isNotEmpty()) {
+                    sb.append(delta)
+                    val now = System.currentTimeMillis()
+                    if (now - lastUi > 110) {
+                        lastUi = now
+                        try { onDelta(sb.toString()) } catch (_: Exception) {}
+                    }
+                }
+            }
+        } finally {
+            try { c.disconnect() } catch (_: Exception) {}
+        }
+        val out = sb.toString().trim()
+        if (out.isEmpty()) throw HooshException("پاسخی دریافت نشد — دوباره امتحان کن")
+        onDelta(out)
+        return out
     }
 
     private fun chatDirect(msgs: List<ChatMsg>): String {
