@@ -116,7 +116,7 @@ object VisionAnalyzer {
             api.init(tessDir.absolutePath, "fas")
             api.setImage(bmp)
             val t = api.getUTF8Text() ?: ""
-            api.recycle()
+            try { api.end() } catch (_: Exception) {}
             t.take(3500).ifBlank { null }
         } catch (_: Exception) {
             null
