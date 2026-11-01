@@ -1,0 +1,84 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Read version
+        id: ver
+        run: |
+          echo "v=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)" >> "$GITHUB_OUTPUT"
+          echo "c=$(grep -oP 'versionCode = \K[0-9]+' app/build.gradle.kts)" >> "$GITHUB_OUTPUT"
+
+      - name: Build APK
+        run: gradle :app:assembleRelease --no-daemon
+
+      - name: Verify APK (signature + integrity) — fail build if invalid
+        run: |
+          APK=app/build/outputs/apk/release/app-release.apk
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)
+          echo "build-tools: $BT"
+          "$BT/apksigner" verify --print-certs "$APK"
+          python3 - <<'PY'
+          import zipfile, struct
+          p = 'app/build/outputs/apk/release/app-release.apk'
+          z = zipfile.ZipFile(p)
+          assert z.testzip() is None, 'zip corrupt'
+          assert 'AndroidManifest.xml' in z.namelist(), 'no manifest'
+          assert any(n.endswith('.dex') for n in z.namelist()), 'no dex'
+          arsc = z.getinfo('resources.arsc')
+          assert arsc.compress_type == 0, 'resources.arsc must be STORED'
+          data = open(p,'rb').read()
+          eocd = data.rfind(b'PK\x05\x06')
+          cd = struct.unpack('<I', data[eocd+16:eocd+20])[0]
+          assert data[cd-16:cd] == b'APK Sig Block 42', 'no v2 signing block'
+          print('APK structure OK:', len(z.namelist()), 'entries')
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hoosh-pro-apk
+          path: app/build/outputs/apk/release/app-release.apk
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${{ steps.ver.outputs.v }}"
+          SRC=app/build/outputs/apk/release/app-release.apk
+          NAME="Hoosh-Pro-${TAG}.apk"
+          cp "$SRC" "$NAME"
+          cp "$SRC" "Hoosh-Pro-latest.apk"
+          SHA=$(sha256sum "$NAME" | cut -d' ' -f1)
+          SIZE=$(stat -c%s "$NAME")
+          MB=$(( (SIZE + 1048575) / 1048576 ))
+          gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "$TAG" "$NAME" "Hoosh-Pro-latest.apk" \
+            --repo khastomahdi-tech/Hoosh-Pro \
+            --title "HOOSH PRO $TAG" \
+            --notes "دانلود مستقیم APK — امضای verified ✅
+          ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
+          **هوش پرو — دستیار هوشمند (نسخه ${TAG})**
+          ورود با ایمیل · گفتگوی هوشمند بدون محدودیت · تولید عکس از توضیح فارسی · حافظه‌ی گفتگوها · رابط تیره‌ی پیشرفته
+
+          **SHA-256:** ${SHA}
+          **حجم:** ${SIZE} بایت (≈ ${MB} مگابایت)"
